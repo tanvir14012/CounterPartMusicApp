@@ -22,8 +22,8 @@ WantedBy=multi-user.target
 
 sudo systemctl daemon-reload
 
-sudo systemctl start counterpartmusic.service
 sudo systemctl enable counterpartmusic.service
+sudo systemctl start counterpartmusic.service
 sudo systemctl status counterpartmusic.service
 sudo systemctl stop counterpartmusic.service
 
