@@ -1,0 +1,34 @@
+﻿sudo nano /etc/systemd/system/counterpartmusic.service
+
+
+[Unit]
+Description=Counterpartmusic App
+After=network.target
+
+[Service]
+WorkingDirectory=/usr/counterpartmusic/app
+ExecStart=/usr/bin/dotnet /usr/counterpartmusic/app/CounterPartMusic.dll
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=mydotnetapp
+User=root
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target
+
+
+sudo systemctl daemon-reload
+
+sudo systemctl start counterpartmusic.service
+sudo systemctl enable counterpartmusic.service
+sudo systemctl status counterpartmusic.service
+sudo systemctl stop counterpartmusic.service
+
+# Connect to the server via ssh
+ssh root@<server ip>
+password
+
+    

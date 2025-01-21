@@ -1,0 +1,196 @@
+﻿CREATE SCHEMA IF NOT EXISTS MASTER;
+USE MASTER;
+
+CREATE TABLE IF NOT EXISTS APPSETTINGS (
+    KEY VARCHAR(200) NOT NULL PRIMARY KEY,
+    VALUE VARCHAR,
+    LAST_MODIFIED_DTTM TIMESTAMP_NTZ NOT NULL DEFAULT(CURRENT_TIMESTAMP)
+);
+
+INSERT INTO MASTER.APPSETTINGS(KEY, VALUE) VALUES ('Host', 'ftp-data.themlc.com');
+INSERT INTO MASTER.APPSETTINGS(KEY, VALUE) VALUES ('Username', '<>');
+INSERT INTO MASTER.APPSETTINGS(KEY, VALUE) VALUES ('PrivateKeyPath', '/usr/counterpartmusic/id_rsa');
+INSERT INTO MASTER.APPSETTINGS(KEY, VALUE) VALUES ('RemoteRoot', '/public-database');
+INSERT INTO MASTER.APPSETTINGS(KEY, VALUE) VALUES ('SnapshotPrefix', 'BWARM_PADPIDA2020062405C_');
+INSERT INTO MASTER.APPSETTINGS(KEY, VALUE) VALUES ('LocalPath', '/usr/counterpartmusic/snapshots');
+INSERT INTO MASTER.APPSETTINGS(KEY, VALUE) VALUES ('AutoSnapshotUpdate', 'OFF');
+INSERT INTO MASTER.APPSETTINGS(KEY, VALUE) VALUES ('SnapshotCheckIntervalInHours', '168');
+INSERT INTO MASTER.APPSETTINGS(KEY, VALUE) VALUES ('TablesToReloadImmediately', NULL);
+
+  CREATE OR REPLACE TABLE APPLOG (
+    ID INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+    UPDATED_ON_DTTM TIMESTAMP_NTZ DEFAULT NULL,
+    SNAPSHOT_NM VARCHAR,
+    TABLE_NM VARCHAR,
+    SCHEMA_NM VARCHAR,
+    IS_RELOAD BOOLEAN DEFAULT FALSE,
+    RAW_FILE_SIZE_MB FLOAT DEFAULT 0,
+    SFTP_DOWNLOADED_TIME_MINUTES INT DEFAULT 0,
+    TABLE_LOAD_TIME_MINUTES INT DEFAULT 0
+    );
+
+CREATE OR REPLACE FILE FORMAT TSV_FORMAT 
+  TYPE = 'CSV' -- Specify the type explicitly as 'CSV'
+  FIELD_DELIMITER = '\t' -- Tab-delimited file for TSV
+  FIELD_OPTIONALLY_ENCLOSED_BY = '"' -- Fields optionally enclosed in double quotes
+  ESCAPE = '\\' -- Use backslash for escaping special characters
+  SKIP_HEADER = 0 -- Skip no header rows
+  SKIP_BLANK_LINES = TRUE -- Ignore blank lines
+  ERROR_ON_COLUMN_COUNT_MISMATCH = FALSE -- Allow varying column counts in rows
+  TRIM_SPACE = TRUE
+  REPLACE_INVALID_CHARACTERS = TRUE
+  COMPRESSION = 'GZIP'; -- No compression
+
+
+CREATE TABLE RECORDINGS (
+	"FeedProvidersRecordingId" VARCHAR(3000) NOT NULL,
+	ISRC VARCHAR(12),
+	"RecordingTitle" VARCHAR(16777216),
+	"RecordingSubTitle" VARCHAR(16777216),
+	"DisplayArtistName" VARCHAR(16777216),
+	"DisplayArtistISNI" VARCHAR(16),
+	"PLine" VARCHAR(3000),
+	"Duration" VARCHAR(100),
+	"FeedProvidersReleaseId" VARCHAR(3000),
+	"StudioProducerName" VARCHAR(16777216),
+	"StudioProducerId" VARCHAR(3000),
+	"OriginalDataProviderName" VARCHAR(16777216),
+	"OriginalDataProviderDPID" VARCHAR(16777216),
+	"IsDataProvidedAsReceived" VARCHAR(16777216),
+	primary key ("FeedProvidersRecordingId")
+);
+
+CREATE TABLE WORKS (
+    "FeedProvidersWorkId" VARCHAR(3000),
+    "ISWC" VARCHAR(11),
+    "WorkTitle" VARCHAR,
+    "OpusNumber" VARCHAR(3000),
+    "ComposerCatalogNumber" VARCHAR(3000),
+    "NominalDuration" VARCHAR(3000),
+    "HasRightsInDispute" VARCHAR(6),
+    "TerritoryOfPublicDomain" VARCHAR,
+    "IsArrangementOfTraditionalWork" VARCHAR(6),
+    "AlternativeWorkForUsStatutoryReversion" VARCHAR(3000),
+    "UsStatutoryReversionDate" VARCHAR(100),
+    PRIMARY KEY ("FeedProvidersWorkId")
+);
+
+CREATE TABLE ALTERNATIVE_WORK_TITLES (
+    "FeedProvidersWorkAlternativeTitleId" VARCHAR(3000),
+    "FeedProvidersWorkId" VARCHAR(3000),
+    "AlternativeTitle" VARCHAR,
+    "LanguageAndScriptCode" VARCHAR(3000),
+    "TitleType" VARCHAR(3000),
+    PRIMARY KEY ("FeedProvidersWorkAlternativeTitleId")
+);
+
+CREATE TABLE WORK_IDENTIFIERS (
+    "FeedProvidersWorkProprietaryIdentifierId" VARCHAR(3000),
+    "FeedProvidersWorkId" VARCHAR(3000),
+    "Identifier" VARCHAR(3000),
+    "FeedProvidersAllocatingPartyId" VARCHAR(3000),
+    PRIMARY KEY ("FeedProvidersWorkProprietaryIdentifierId")
+);
+
+CREATE TABLE PARTIES (
+    "FeedProvidersPartyId" VARCHAR(3000),
+    "ISNI" VARCHAR(15),
+    "IpiNameNumber" INT,
+    "CisacSocietyId" VARCHAR(3),
+    "DPID" VARCHAR(100),
+    "FullName" VARCHAR,
+    "NamesBeforeKeyName" VARCHAR,
+    "KeyName" VARCHAR,
+    "NamesAfterKeyName" VARCHAR,
+    PRIMARY KEY ("FeedProvidersPartyId")
+);
+
+CREATE TABLE WORK_RIGHT_SHARES (
+    "FeedProvidersWorkRightShareId" VARCHAR(3000),
+    "FeedProvidersWorkId" VARCHAR(3000),
+    "FeedProvidersPartyId" VARCHAR(3000),
+    "PartyRole" VARCHAR(100),
+    "RightSharePercentage" FLOAT, 
+    "RightShareType" VARCHAR(100),
+    "RightsType" VARCHAR(100),
+    "ValidityStartDate" VARCHAR(10),
+    "ValidityEndDate" VARCHAR(10),
+    "FeedProvidersParentWorkRightShareId" VARCHAR(3000),
+    "TerritoryCode" VARCHAR,
+    "UseType" VARCHAR,
+    PRIMARY KEY ("FeedProvidersWorkRightShareId")
+);
+
+CREATE TABLE ALTERNATIVE_RECORDING_TITLES (
+    "FeedProvidersRecordingAlternativeTitleId" VARCHAR(3000),
+    "FeedProvidersRecordingId" VARCHAR(3000),
+    "AlternativeTitle" VARCHAR,
+    "LanguageAndScriptCode" VARCHAR(3000),
+    "TitleType" VARCHAR(3000),
+    PRIMARY KEY ("FeedProvidersRecordingAlternativeTitleId")
+);
+
+CREATE TABLE RECORDING_IDENTIFIERS (
+    "FeedProvidersRecordingProprietaryIdentifierId" VARCHAR(3000),
+    "FeedProvidersRecordingId" VARCHAR(3000),
+    "Identifier" VARCHAR(3000),
+    "FeedProvidersAllocatingPartyId" VARCHAR(3000),
+    PRIMARY KEY ("FeedProvidersRecordingProprietaryIdentifierId")
+);
+
+CREATE TABLE RELEASES (
+    "FeedProvidersReleaseId" VARCHAR(3000),
+    "ICPN" VARCHAR(15),
+    "ReleaseTitle" VARCHAR,
+    "ReleaseSubTitle" VARCHAR,
+    "DisplayArtistName" VARCHAR,
+    "DisplayArtistISNI" VARCHAR(16),
+    "LabelName" VARCHAR(3000),
+    "ReleaseDate" VARCHAR(10),
+    "OriginalDataProviderName" VARCHAR(3000),
+    "OriginalDataProviderDPID" VARCHAR(3000),
+    "IsDataProvidedAsReceived" VARCHAR,
+    PRIMARY KEY ("FeedProvidersReleaseId")
+);
+
+CREATE TABLE RELEASE_IDENTIFIERS (
+    "FeedProvidersReleaseProprietaryIdentifierId" VARCHAR(3000),
+    "FeedProvidersReleaseId" VARCHAR(3000),
+    "Identifier" VARCHAR(3000),
+    "FeedProvidersAllocatingPartyId" VARCHAR(3000),
+    PRIMARY KEY ("FeedProvidersReleaseProprietaryIdentifierId")
+);
+
+CREATE TABLE WORK_RECORDINGS (
+    "FeedProvidersLinkId" VARCHAR(3000),
+    "FeedProvidersWorkId" VARCHAR(3000),
+    "FeedProvidersRecordingId" VARCHAR(3000),
+    PRIMARY KEY ("FeedProvidersLinkId")
+);
+
+CREATE TABLE UNCLAIMED_WORKS (
+    "FeedProvidersRightShareId" VARCHAR(3000),
+    "FeedProvidersRecordingId" VARCHAR(3000),
+    "FeedProvidersWorkId" VARCHAR(3000),
+    "ISRC"  VARCHAR(12),
+    "DspRecordingId"  VARCHAR(3000),
+    "RecordingTitle" VARCHAR,
+    "RecordingSubTitle" VARCHAR,
+    "AlternativeRecordingTitle" VARCHAR,
+    "DisplayArtistName" VARCHAR,
+    "DisplayArtistISNI" VARCHAR(16),
+    "Duration" VARCHAR(100),
+    "UnclaimedPercentage" FLOAT,
+    "PercentileForPrioritisation" FLOAT
+);
+
+# check table size
+SELECT 
+    table_name AS "Table", 
+    ROUND(((data_length + index_length) / 1024 / 1024), 2) AS "Size (MB)"
+FROM 
+    information_schema.TABLES 
+WHERE 
+    table_schema = 'counterpartmusic'
+ORDER BY 
+    (data_length + index_length) DESC;

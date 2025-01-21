@@ -1,0 +1,80 @@
+﻿Install the .NET SDK:
+
+wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+sudo apt-get update
+sudo apt-get install -y dotnet-sdk-8.0
+
+dotnet --version
+
+Or, 
+Install the .NET Runtime:
+wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+sudo apt-get update
+sudo apt-get install -y dotnet-runtime-8.0
+
+dotnet --list-runtimes
+which dotnet
+
+
+
+Install MySQL on an Ubuntu system:
+
+sudo apt-get update
+sudo apt-get install -y mysql-server
+sudo mysql_secure_installation
+
+sudo systemctl status mysql
+
+sudo mysql
+USE mysql;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'P00ntang1!';
+FLUSH PRIVILEGES;
+EXIT;
+
+
+mysql -u root -p
+
+
+Allow remote access to MySQL:
+
+sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+
+Find the line that begins with bind-address and change its value from 127.0.0.1 to 0.0.0.0.
+
+sudo systemctl restart mysql
+
+CREATE USER 'remote'@'%' IDENTIFIED BY 'P00ntang1!';
+GRANT ALL PRIVILEGES ON *.* TO 'remote'@'%';
+FLUSH PRIVILEGES;
+EXIT;
+sudo systemctl restart mysql
+
+
+
+
+sudo ufw allow 3306/tcp
+sudo ufw enable
+
+sudo ufw reload
+sudo ufw allow 22
+sudo ufw enable
+sudo ufw status
+
+
+
+
+
+
+
+
+cd /
+cd usr
+sudo mkdir counterpartmusic
+sudo chmod 700 .
+sudo chmod 700 .
+ls -ld .
+cd counterpartmusic
+sudo mkdir snapshots
+sudo mkdi
