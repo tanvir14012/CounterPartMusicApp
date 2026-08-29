@@ -104,6 +104,41 @@ npm install
 npm start
 ```
 
+# Python Implementation
+The Python side-by-side ETL workflow is available under `Python/` and follows the same Snowflake/SFTP ingestion approach in a data-engineering-friendly format using Python, Paramiko, and the Snowflake Connector for Python.
+
+## Python Project Structure
+```text
+Python/
+  .env.example
+  requirements.txt
+  src/
+    config.py
+    config_repository.py
+    constants.py
+    logger.py
+    main.py
+    sftp_service.py
+    snapshot_loader.py
+    snowflake_client.py
+    tsv_splitter.py
+```
+
+## Python Setup
+1. Copy `Python/.env.example` to `Python/.env` and fill in Snowflake and SFTP settings.
+2. Create a virtual environment and install dependencies:
+```bash
+cd Python
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+3. Start the Python worker:
+```bash
+python src/main.py
+```
+4. Optionally, use a PM2-style deployment pattern or a systemd service for production-only monitoring.
+
 ## Linux Deployment (Nginx + Node + PM2)
 1. Install Node.js LTS, Nginx, and PM2:
 ```bash
